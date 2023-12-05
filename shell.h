@@ -12,7 +12,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define BUFFERSIZE 1024
+#define BUFFER_SIZE 1024
+
+extern char *environ;
 
 typedef struct list_s {
     char *pro;
@@ -23,8 +25,6 @@ typedef struct list_s {
 /*========== PRINTING ==========*/
 int _putchar(char c);
 int _puts(char *str);
-
-
 int shell_loop(char **av, int fd);
 
 #endif

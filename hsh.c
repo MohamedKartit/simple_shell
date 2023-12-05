@@ -1,75 +1,71 @@
 #include "shell.h"
 
-int shell_loop(char **av, int fd)
+int check_term(int fd)
 {
-	ssize_t line = 1;
-
-	while (line != -1)
-	{
-		char *buffer = malloc(sizeof(char) * BUFFERSIZE);
-		if (!buffer)
-			return (0);
-		size_t buff_size = BUFFERSIZE;
-		printf("$ ");
-		line = getline(&buffer, &buff_size, stdin);
-		if (line == -1) {
-			perror("getline: ");
-			free(buffer);
-			return (0);
-		}
-		else if (buffer[0] == '\n')
-		{
-			free (buffer);
-			continue;
-		}
-		buffer[strcspn(buffer, "\n")] = '\0';
-		char path[] = "/usr/bin/";
-
-		char *token = strtok(buffer, " ");
-		list_t *commad = malloc(sizeof(list_t));
-		if (!commad) {
-			free(buffer);
-			return (0);
-		}
-		commad->pro = malloc(strlen(path) + strlen(token) + 1);
-		if (!commad->pro) {
-			free(buffer);
-			free(commad);
-			return (0);
-		}
-		strcpy(commad->pro, path);
-		strcat(commad->pro, token);
-
-		token = strtok(NULL, " ");
-		commad->args = token;
-		token = strtok(NULL, " ");
-		commad->pathname = token;
-
-		char *args[] = { commad->pro, commad->args, commad->pathname, NULL };
-		pid_t pid;
-		pid = fork();
-		if (pid == -1) {
-			perror("Error: ");
-			free(buffer);
-			free(commad->pro);
-			free(commad);
-			return (1);
-		}
-		if (pid == 0) {
-			if (execve(args[0], args, NULL) == -1)
-				perror("Error: ");
-			free(buffer);
-			free(commad->pro);
-			free(commad);
-		} else {
-			// Free memory in parent process
-			free(buffer);
-			free(commad->pro);
-			free(commad);
-			// Wait for child process to finish
-			wait(NULL);
-		}
-	}
-	return (0);
+	return (isatty(STDIN_FILENO) && fd >= 2);
 }
 
+int shell_loop(char **av, int fd)
+{
+	char *buff;
+	ssize_t get = 1;
+	while (get != -1)
+	{
+		pid_t child;
+		size_t buffer_int = BUFFER_SIZE;
+		buff = malloc(BUFFER_SIZE + 1);
+		if (!buff)
+			return (0);
+		if (check_term(fd))
+			_puts("$ ");
+		get = getline(&buff, &buffer_int, stdin);
+		if (get == -1)
+		{
+			if (check_term(fd))
+				_putchar('\n');
+			free(buff);
+			return (1);
+		}
+		buff[strcspn(buff, "\n")] = '\0';
+		char *token = strtok(buff, " ");
+		if (token == NULL)
+		{
+			free(buff);
+			continue;
+		}
+
+		char *argv[10];
+		int i = 0;
+		while (token != NULL)
+		{
+			argv[i++] = token;
+			token = strtok(NULL, " ");
+		}
+		argv[i] = NULL;
+		child = fork();
+		if (child == 0)
+		{
+			if (execve(argv[0], argv, NULL) == -1)
+			{
+				_puts(av[0]);
+				_puts(": No such file or directory\n");
+				free(buff);
+				return EXIT_FAILURE;
+			}
+		}
+		else if (child == -1)
+		{
+			perror("fork");
+			free(buff);
+			return 1;
+		}
+		else
+		{
+			free(buff);
+			wait(NULL);
+			buff = NULL;
+		}
+	}
+	free(buff);
+	return (0);
+}
