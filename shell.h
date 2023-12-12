@@ -1,7 +1,7 @@
 #ifndef _SHELL_H_
 #define _SHELL_H_
-/*========== LIBRARIES ==========*/
 
+/*========== LIBRARIES ==========*/
 #include <limits.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -14,17 +14,21 @@
 
 #define BUFFER_SIZE 1024
 
-extern char *environ;
-
-typedef struct list_s {
-    char *pro;
-    char *args;
-    char *pathname;
-} list_t;
-
+extern char **environ;
+/*
+*typedef struct list_s
+*{
+*	char *pro;
+*	char *args;
+*	char *pathname;
+*} list_t;
+*/
 /*========== PRINTING ==========*/
 int _putchar(char c);
 int _puts(char *str);
+char *_strchr(char *s, int c);
+int _strlen(char *s);
+int exec_prog(char **argv, char *av);
 int shell_loop(char **av, int fd);
 
 #endif

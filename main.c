@@ -1,8 +1,15 @@
 #include "shell.h"
 
+/**
+ * main - this is the start of our program
+ * @ac: number of arguments
+ * @av: the arguments
+ * Return: EXIT_SUCCESS on Success, EXIT_FAILURE on failure
+ */
 int main(int ac, char **av)
 {
 	int r = 3;
+
 	if (ac == 2)
 	{
 		r = open(av[1], O_RDONLY);
@@ -16,5 +23,5 @@ int main(int ac, char **av)
 		}
 	}
 	shell_loop(av, r);
-	return EXIT_SUCCESS;
+	return (EXIT_SUCCESS);
 }
