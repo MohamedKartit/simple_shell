@@ -22,6 +22,5 @@ int main(int ac, char **av)
 			return (EXIT_FAILURE);
 		}
 	}
-	shell_loop(av, r);
-	return (EXIT_SUCCESS);
+	return (shell_loop(av, r));
 }

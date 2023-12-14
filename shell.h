@@ -17,6 +17,7 @@
 extern char **environ;
 
 /*========== PRINTING ==========*/
+
 int _putchar(char c);
 int _puts(char *str);
 int	_strncmp(const char *s1, const char *s2, size_t n);

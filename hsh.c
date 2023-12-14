@@ -41,7 +41,6 @@ int exec_prog_path(char **argv, char *av)
 		char *new_argv[BUFFER_SIZE];
 
 		new_argv[0] = full_command_path;
-
 		i = 1;
 		while (argv[i] != NULL)
 		{
