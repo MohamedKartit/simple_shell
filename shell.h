@@ -34,3 +34,4 @@ char *get_full_path();
 char	*_strdup(const char *s);
 
 #endif
+
