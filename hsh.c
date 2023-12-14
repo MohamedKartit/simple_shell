@@ -35,14 +35,11 @@ int exec_prog_path(char **argv, char *av)
 {
 	char *full_command_path = does_command_exist(argv[0]);
 	int i;
-	int result;
 
 	if (full_command_path != NULL)
 	{
-		char **new_argv = malloc(sizeof(char *) * BUFFER_SIZE);
+		char *new_argv[BUFFER_SIZE];
 
-		if (new_argv == NULL)
-			return (EXIT_FAILURE);
 		new_argv[0] = full_command_path;
 
 		i = 1;
@@ -52,10 +49,7 @@ int exec_prog_path(char **argv, char *av)
 			i++;
 		}
 		new_argv[i] = NULL;
-		result = exec_prog(new_argv, av);
-
-		free(new_argv);
-		return (result);
+		return (exec_prog(new_argv, av));
 	}
 	else
 		return (exec_prog(argv, av));
