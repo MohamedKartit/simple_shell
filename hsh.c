@@ -35,11 +35,17 @@ int exec_prog_path(char **argv, char *av)
 {
 	char *full_command_path = does_command_exist(argv[0]);
 	int i;
+	int result;
 
 	if (full_command_path != NULL)
 	{
-		char *new_argv[BUFFER_SIZE];
+		char **new_argv = (char **)malloc(sizeof(char *) * MAX_ARGS);
 
+		if (!new_argv)
+		{
+			free(full_command_path);
+			return (0);
+		}
 		new_argv[0] = full_command_path;
 		i = 1;
 		while (argv[i] != NULL)
@@ -48,11 +54,15 @@ int exec_prog_path(char **argv, char *av)
 			i++;
 		}
 		new_argv[i] = NULL;
-		return (exec_prog(new_argv, av));
+		result = exec_prog(new_argv, av);
+		free(full_command_path);
+		free(new_argv);
+		return (result);
 	}
 	else
 		return (exec_prog(argv, av));
 }
+
 
 /**
  * check_term - check if the command is from terminal
@@ -113,3 +123,4 @@ int shell_loop(char **av, int fd)
 	free(buff);
 	return (EXIT_SUCCESS);
 }
+

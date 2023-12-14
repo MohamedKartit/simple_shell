@@ -13,6 +13,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #define BUFFER_SIZE 1024
+#define MAX_ARGS 20
 
 extern char **environ;
 
