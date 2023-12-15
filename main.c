@@ -15,15 +15,20 @@ int main(int ac, char **av)
 		r = open(av[1], O_RDONLY);
 		if (r == -1)
 		{
-			_puts(av[0]);
-			_puts(": 0: can't open");
-			_puts(av[1]);
-			_putchar('\n');
+			if (errno == EACCES)
+				exit(126);
+			if (errno == ENOENT)
+			{
+				_puts(av[0]);
+				_puts(": 0: can't open");
+				_puts(av[1]);
+				_putchar('\n');
+				exit(127);
+			}
 			return (EXIT_FAILURE);
 		}
 	}
 	shell_loop(av, r);
 	return (EXIT_SUCCESS);
 }
-
 

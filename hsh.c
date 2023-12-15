@@ -15,8 +15,9 @@ int exec_prog(char **argv, char *av)
 		if (execve(argv[0], argv, environ) == -1)
 		{
 			_puts(av);
-			_puts(": No such file or directory\n");
-			return (1);
+			_puts(": 1: hbtn_cmd: not found\n");
+			exit(127);
+			return (EXIT_FAILURE);
 		}
 	}
 	else if (child == -1)
@@ -24,6 +25,45 @@ int exec_prog(char **argv, char *av)
 	wait(NULL);
 	return (0);
 }
+
+/**
+ * exec_prog_path - checks if the command exists and execute is
+ * @argv: the arguments
+ * @av: the program's name
+ * Return: 0 Success, 1 Error
+ */
+int exec_prog_path(char **argv, char *av)
+{
+	char *full_command_path = does_command_exist(argv[0]);
+	int i;
+	int result;
+
+	if (full_command_path != NULL)
+	{
+		char **new_argv = (char **)malloc(sizeof(char *) * MAX_ARGS);
+
+		if (!new_argv)
+		{
+			free(full_command_path);
+			return (0);
+		}
+		new_argv[0] = full_command_path;
+		i = 1;
+		while (argv[i] != NULL)
+		{
+			new_argv[i] = argv[i];
+			i++;
+		}
+		new_argv[i] = NULL;
+		result = exec_prog(new_argv, av);
+		free(full_command_path);
+		free(new_argv);
+		return (result);
+	}
+	else
+		return (exec_prog(argv, av));
+}
+
 
 /**
  * check_term - check if the command is from terminal
@@ -76,7 +116,7 @@ int shell_loop(char **av, int fd)
 				token = strtok(NULL, " ");
 			}
 			argv[i] = NULL;
-			if (exec_prog(argv, av[0]) == 1)
+			if (exec_prog_path(argv, av[0]) == 1)
 				return (free(buff), EXIT_FAILURE);
 		}
 		free(buff);
@@ -84,3 +124,5 @@ int shell_loop(char **av, int fd)
 	free(buff);
 	return (EXIT_SUCCESS);
 }
+
+
