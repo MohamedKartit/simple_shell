@@ -9,21 +9,26 @@
 int exec_prog(char **argv, char *av)
 {
 	pid_t child = fork();
+	int status;
 
 	if (child == 0)
 	{
 		if (execve(argv[0], argv, environ) == -1)
 		{
-			_puts(av);
-			_puts(": 1: hbtn_cmd: not found\n");
-			exit(127);
-			return (EXIT_FAILURE);
+			_putserro(av);
+			_putserro(": 1: ");
+			_putserro(argv[0]);
+			_putserro(": not found\n");
+			return (127);
 		}
 	}
 	else if (child == -1)
 		return (1);
-	wait(NULL);
-	return (0);
+	wait(&status);
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	else
+		return (-1);
 }
 
 /**
@@ -45,7 +50,7 @@ int exec_prog_path(char **argv, char *av)
 		if (!new_argv)
 		{
 			free(full_command_path);
-			return (0);
+			return (1);
 		}
 		new_argv[0] = full_command_path;
 		i = 1;
@@ -85,9 +90,9 @@ int shell_loop(char **av, int fd)
 {
 	char *buff;
 	ssize_t get = 1;
+	int last_command = 0;
 
-	while (get != -1)
-	{
+	do {
 		size_t buffer_int = BUFFER_SIZE;
 		char *token;
 		char *argv[1024];
@@ -95,7 +100,7 @@ int shell_loop(char **av, int fd)
 
 		buff = malloc(BUFFER_SIZE + 1);
 		if (!buff)
-			return (EXIT_FAILURE);
+			return (1);
 		if (check_term(fd))
 			_puts("$ ");
 		get = getline(&buff, &buffer_int, stdin);
@@ -104,10 +109,10 @@ int shell_loop(char **av, int fd)
 			if (check_term(fd))
 				_putchar('\n');
 			free(buff);
-			return (EXIT_FAILURE);
+			break;
 		}
 		buff[_strlen(buff) - 1] = '\0';
-		token =	strtok(buff, " ");
+		token = strtok(buff, " ");
 		if (token != NULL)
 		{
 			while (token != NULL)
@@ -116,13 +121,12 @@ int shell_loop(char **av, int fd)
 				token = strtok(NULL, " ");
 			}
 			argv[i] = NULL;
-			if (exec_prog_path(argv, av[0]) == 1)
-				return (free(buff), EXIT_FAILURE);
+			last_command = exec_prog_path(argv, av[0]);
 		}
 		free(buff);
-	}
-	free(buff);
-	return (EXIT_SUCCESS);
+	} while (get != -1);
+	while (wait(NULL) > 0)
+		;
+	return (last_command);
 }
-
 
