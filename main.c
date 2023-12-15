@@ -19,16 +19,14 @@ int main(int ac, char **av)
 				exit(126);
 			if (errno == ENOENT)
 			{
-				_puts(av[0]);
-				_puts(": 0: can't open");
-				_puts(av[1]);
-				_putchar('\n');
+				_putserro(av[0]);
+				_putserro(": 0: can't open");
+				_putserro(av[1]);
+				_putcharerro('\n');
 				exit(127);
 			}
 			return (EXIT_FAILURE);
 		}
 	}
-	shell_loop(av, r);
-	return (EXIT_SUCCESS);
+	return (shell_loop(av, r));
 }
-
