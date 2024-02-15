@@ -60,6 +60,10 @@ char *does_command_exist(const char *command)
 	return (NULL);
 }
 
+/**
+ * print_env - Prints the current env
+ * @env: the env to print
+ */
 void print_env(char **env)
 {
 	int x = 0;
@@ -72,6 +76,12 @@ void print_env(char **env)
 		_putchar('\n');
 	}
 }
+
+/**
+ * is_special - checks if the command is special or not
+ * @command: the command to check
+ * Return: 1 if the command is special, 0 if not
+ */
 int is_special(char *command)
 {
 	if (_strncmp(command, "exit", 4) == 0)

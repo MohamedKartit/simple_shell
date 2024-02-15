@@ -26,11 +26,21 @@ int _puts(char *str)
 	return (x);
 }
 
+/**
+ * _putcharerro - print char in the stderr
+ * @c: the character
+ * Return: returns 1 if printed -1 error
+ */
 int _putcharerro(char c)
 {
 	return (write(2, &c, 1));
 }
 
+/**
+ * _putserro - print string in the stderr
+ * @str: the string to be printed
+ * Return: number of charcter printed
+ */
 int _putserro(char *str)
 {
 	int x = 0;

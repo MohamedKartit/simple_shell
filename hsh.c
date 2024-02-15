@@ -6,13 +6,15 @@
  * @av: the program's name
  * Return: 0 Success, 1 Error
  */
-int exec_prog(char **argv, char *av) {
+int exec_prog(char **argv, char *av)
+{
 	pid_t child = fork();
 	int status;
 
 	if (child == 0)
 	{
-		if (execve(argv[0], argv, environ) == -1) {
+		if (execve(argv[0], argv, environ) == -1)
+		{
 			_putserro(av);
 			_putserro(": 1: ");
 			_putserro(argv[0]);
@@ -26,9 +28,9 @@ int exec_prog(char **argv, char *av) {
 		return (1);
 	wait(&status);
 	if (WIFEXITED(status))
-		return WEXITSTATUS(status);
+		return (WEXITSTATUS(status));
 	else
-		return -1;
+		return (-1);
 }
 
 /**
@@ -87,7 +89,8 @@ int check_term(int fd)
  * @fd: the fd to read from
  * Return: 1 on Success, 0 otherwise
  */
-int shell_loop(char **av, int fd) {
+int shell_loop(char **av, int fd)
+{
 	char *buff;
 	ssize_t get = 1;
 	int last_command = 0;
@@ -104,7 +107,8 @@ int shell_loop(char **av, int fd) {
 		if (check_term(fd))
 			_puts("$ ");
 		get = getline(&buff, &buffer_int, stdin);
-		if (get == -1) {
+		if (get == -1)
+		{
 			if (check_term(fd))
 				_putchar('\n');
 			free(buff);
@@ -112,8 +116,10 @@ int shell_loop(char **av, int fd) {
 		}
 		buff[_strlen(buff) - 1] = '\0';
 		token = strtok(buff, " ");
-		if (token != NULL) {
-			while (token != NULL) {
+		if (token != NULL)
+		{
+			while (token != NULL)
+			{
 				argv[i++] = token;
 				token = strtok(NULL, " ");
 			}
@@ -122,6 +128,7 @@ int shell_loop(char **av, int fd) {
 		}
 		free(buff);
 	} while (get != -1);
-	while (wait(NULL) > 0);
-	return last_command;
+	while (wait(NULL) > 0)
+		;
+	return (last_command);
 }
