@@ -41,31 +41,7 @@ int     _strncmp(const char *s1, const char *s2, size_t n)
 		}
 		return (0);
 }
-/**
- * get_full_path - gets the full path of environ
- * Return: the path or null
-*/
-char *get_full_path()
-{
-	char **env = environ;
-	char *path = NULL;
 
-	while (*env != NULL)
-	{
-		if (_strncmp(*env, "PATH=", 5) == 0)
-		{
-			char *env_path = *env + 5;
-
-			path = (char *)malloc(sizeof(char) * (_strlen(env_path) + 1));
-			if (path == NULL)
-				return (NULL);
-			_strlcpy(path, env_path, _strlen(env_path) + 1);
-			break;
-		}
-		env++;
-	}
-	return (path);
-}
 /**
  * _strlcat - concatenaite dest and src into the dest
  * @dst: the distination
@@ -119,4 +95,3 @@ size_t  _strlcpy(char *dst, const char *src, size_t size)
 	}
 	return (lsrc);
 }
-

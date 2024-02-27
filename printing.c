@@ -51,3 +51,4 @@ int _putserro(char *str)
 		_putcharerro(str[x++]);
 	return (x);
 }
+

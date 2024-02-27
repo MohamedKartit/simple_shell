@@ -9,6 +9,7 @@
 int main(int ac, char **av)
 {
 	int r = 3;
+	infs_t infs[] = {INF_INITIALIZER};
 
 	if (ac == 2)
 	{
@@ -28,5 +29,6 @@ int main(int ac, char **av)
 			return (EXIT_FAILURE);
 		}
 	}
-	return (shell_loop(av, r));
+	return (shell_loop(av, r, infs));
 }
+
