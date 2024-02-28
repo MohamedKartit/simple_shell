@@ -22,7 +22,6 @@ void free_func(char **strings)
 		return;
 	for (i = 0; strings[i] != NULL; ++i)
 		free(strings[i]);
-
 	free(strings);
 }
 
@@ -35,7 +34,6 @@ void free_func(char **strings)
  */
 int shell_loop(char **av, int fd, infs_t *infs)
 {
-	char *buff;
 	char **envp = environ;
 	ssize_t get = 1;
 	int last_command = 0;
@@ -43,25 +41,25 @@ int shell_loop(char **av, int fd, infs_t *infs)
 	do {
 		size_t buffer_int = BUFFER_SIZE;
 
-		buff = malloc(BUFFER_SIZE + 1);
-		if (!buff)
+		infs->buff = NULL;
+		infs->buff = malloc(BUFFER_SIZE + 1);
+		if (!(infs->buff))
 			return (1);
 		if (check_term(fd))
 			_puts("$ ");
-		get = getline(&buff, &buffer_int, stdin);
+		get = getline(&infs->buff, &buffer_int, stdin);
 		if (get == -1)
 		{
 			if (check_term(fd))
 				_putchar('\n');
-			free(buff);
+			free(infs->buff);
 			break;
 		}
-		buff[get - 1] = '\0';
-		last_command = run_command(av, envp, buff, infs);
-		free(buff);
+		infs->buff[get - 1] = '\0';
+		infs->isBuiltin = is_special(infs->buff);
+		last_command = run_command(av, envp, infs);
 	} while (get != -1);
 	while (wait(NULL) > 0)
 		;
 	return (last_command);
 }
-

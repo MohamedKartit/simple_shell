@@ -117,3 +117,4 @@ char	**_strtok(char const *s, char c)
 	return (ft_coping(strings, s, n_words, c));
 }
 
+

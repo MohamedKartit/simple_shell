@@ -51,30 +51,38 @@ char	**get_path(char **envp)
  * run_command - runs the command
  * @av: the argv
  * @envp: the environ
- * @buff: line that have the command
  * @infs: the struct that has infos about the command
  * Return: returns the exit status
  */
-int run_command(char **av, char **envp, char *buff, infs_t *infs)
+int run_command(char **av, char **envp, infs_t *infs)
 {
-	infs->cmd_args = _strtok(buff, ' ');
+	infs->cmd_args = _strtok(infs->buff, ' ');
 	if (infs->cmd_args == NULL || infs->cmd_args[0] == NULL)
 	{
 		free_func(infs->cmd_args);
+		free(infs->buff);
+		return (0);
+	}
+	if (infs->isBuiltin == 1)
+		return (exit_func(infs, av));
+	else if (infs->isBuiltin == 2)
+	{
+		print_env(envp);
+		flush_infs(infs);
 		return (0);
 	}
 	infs->paths = get_path(envp);
 	infs->cmd = check_command(infs->cmd_args[0], infs->paths);
 	if (infs->cmd)
 	{
-		return (cmd_exec(infs->cmd, infs, av, envp));
+		return (cmd_exec(infs->cmd, infs, envp));
 	}
 	else
 	{
 		if ((access(infs->cmd_args[0], F_OK) == 0) &&
 				(infs->paths || infs->cmd_args[0][0] == '/'))
 		{
-			return (cmd_exec(infs->cmd_args[0], infs, av, envp));
+			return (cmd_exec(infs->cmd_args[0], infs, envp));
 		}
 		else
 		{
@@ -90,15 +98,12 @@ int run_command(char **av, char **envp, char *buff, infs_t *infs)
  * cmd_exec - here where the command gets executed
  * @cmd: the command to be executed
  * @infs: the struct
- * @av: argv
  * @envp: the environ
  * Return: the exit status
  */
-int cmd_exec(char *cmd, infs_t *infs, char **av, char **envp)
+int cmd_exec(char *cmd, infs_t *infs, char **envp)
 {
 	pid_t child_pid;
-	int status = 0;
-	(void)av;
 
 	child_pid = fork();
 	if (child_pid == -1)
@@ -119,12 +124,9 @@ int cmd_exec(char *cmd, infs_t *infs, char **av, char **envp)
 	else
 	{
 		flush_infs(infs);
-		wait(&status);
-		if (WIFEXITED(status))
-			return (WEXITSTATUS(status));
-		else
-			return (-1);
+		wait(&(infs->status));
+		if (WIFEXITED(infs->status))
+			infs->status = WEXITSTATUS(infs->status);
 	}
-	return (0);
+	return (infs->status);
 }
-

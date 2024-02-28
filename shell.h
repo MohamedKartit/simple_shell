@@ -18,20 +18,26 @@
 
 #define BUFFER_SIZE 1024
 #define MAX_ARGS 20
-#define INF_INITIALIZER {NULL, NULL, NULL}
+#define INF_INITIALIZER {NULL, NULL, NULL, NULL, 0, 0}
 extern char **environ;
 
 /**
  * struct infs_s - This struct have infos about the entred command
  * @cmd: the command
+ * @buff: the buffer where to store the line
+ * @isBuiltin: check is if the command is exit or env
+ * @status: save command's status
  * @paths: the available paths
  * @cmd_args: the command and its paths
  */
 typedef struct infs_s
 {
 	char *cmd;
+	char *buff;
 	char **paths;
 	char **cmd_args;
+	int isBuiltin;
+	int status;
 } infs_t;
 
 /*========== PRINTING ==========*/
@@ -54,14 +60,15 @@ size_t	_strlcpy(char *dst, const char *src, size_t size);
 char	*_strdup(const char *s);
 int is_special(char *command);
 void print_env(char **env);
+int _atoi(char *s);
 
 /*======== RUN COMMANDS ==========*/
-int	run_command(char **av, char **envp, char *buff, infs_t *infs);
+int run_command(char **av, char **envp, infs_t *infs);
 int shell_loop(char **av, int fd, infs_t *infs);
 void free_func(char **strings);
 void flush_infs(infs_t *infs);
 int check_term(int fd);
-int cmd_exec(char *cmd, infs_t *infs, char **av, char **envp);
+int cmd_exec(char *cmd, infs_t *infs, char **envp);
+int exit_func(infs_t *infs, char **av);
 
 #endif
-

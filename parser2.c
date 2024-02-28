@@ -55,4 +55,7 @@ void flush_infs(infs_t *infs)
 	free_func(infs->paths);
 	if (infs->cmd)
 		free(infs->cmd);
+	if  (infs->buff)
+		free(infs->buff);
 }
+
